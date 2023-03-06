@@ -1,3 +1,7 @@
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.Scanner;
 
 public class Main {
@@ -165,6 +169,152 @@ public class Main {
 
                     break;
                 case (2):
+                    BufferedReader bufferedReader;
+                    String name = "";
+
+                    System.out.println("Введите имя файла:");
+                    while (name.equals("")) {
+                        name = in.nextLine();
+                    }
+
+                    try {
+                        bufferedReader = new BufferedReader(new FileReader("src/main/resources/" + name));
+                    } catch (FileNotFoundException e) {
+                        System.out.println("Не удалось открыть файл");
+                        continue;
+                    }
+
+                    try {
+                        numOfMethod = Integer.parseInt(bufferedReader.readLine());
+                    } catch (Exception e) {
+                        System.out.println("Ошибка при чтении");
+                        continue;
+                    }
+                    if (!(numOfMethod == 1 || numOfMethod == 3 || numOfMethod == 5 || numOfMethod == 6)) {
+                        System.out.println("Некорректный ввод");
+                        continue;
+                    }
+
+                    if (numOfMethod != 6) {
+                        try {
+                            numOfFunction = Integer.parseInt(bufferedReader.readLine());
+                        } catch (Exception e) {
+                            System.out.println("Ошибка при чтении");
+                            continue;
+                        }
+                        if (numOfFunction < 0 || numOfFunction > 4) {
+                            System.out.println("Некорректный ввод");
+                            continue;
+                        }
+
+                        try {
+                            a = Double.parseDouble(bufferedReader.readLine());
+                        } catch (Exception e) {
+                            System.out.println("Ошибка при чтении");
+                            continue;
+                        }
+
+                        try {
+                            b = Double.parseDouble(bufferedReader.readLine());
+                        } catch (Exception e) {
+                            System.out.println("Ошибка при чтении");
+                            continue;
+                        }
+
+                        if (a >= b) {
+                            System.out.println("Введите правильные границы а и b (a < b)");
+                            continue;
+                        }
+
+                        int tmp = Function.checkRoots(a, b, numOfFunction);
+                        if (tmp != 1) {
+                            System.out.println("На данном интервале не один корень(" + tmp + ")");
+                            continue;
+                        }
+
+                    } else {
+                        try {
+                            numOfFunction = Integer.parseInt(bufferedReader.readLine());
+                        } catch (Exception e) {
+                            System.out.println("Ошибка при чтении");
+                            continue;
+                        }
+                        if (numOfFunction < 0 || numOfFunction > 2) {
+                            System.out.println("Некорректный ввод");
+                            continue;
+                        }
+
+                        try {
+                            a = Double.parseDouble(bufferedReader.readLine());
+                        } catch (Exception e) {
+                            System.out.println("Ошибка при чтении");
+                            continue;
+                        }
+
+                        try {
+                            b = Double.parseDouble(bufferedReader.readLine());
+                        } catch (Exception e) {
+                            System.out.println("Ошибка при чтении");
+                            continue;
+                        }
+                    }
+
+                    try {
+                        eps = Double.parseDouble(bufferedReader.readLine());
+                    } catch (Exception e) {
+                        System.out.println("Ошибка при чтении");
+                        continue;
+                    }
+                    if (eps < 0.0001 || eps > 1) {
+                        System.out.println("Некорректный ввод");
+                        continue;
+                    }
+
+                    try {
+                        save = Integer.parseInt(bufferedReader.readLine());
+                    } catch (Exception e) {
+                        System.out.println("Ошибка при чтении");
+                        continue;
+                    }
+
+                    if (!(save == 1 || save == 0)) {
+                        System.out.println("Некорректный ввод");
+                        continue;
+                    }
+
+                    System.out.println("Прочитанные данные:\n" +
+                            "Номер метода: " + numOfMethod + "\n" +
+                            "Номер функции: " + numOfFunction + "\n" +
+                            "a: " + a + "\n" +
+                            "b: " + b + "\n" +
+                            "Погрешность: " + eps + "\n" +
+                            "Режим сохранения: " + save + "\n");
+
+                    Chart chart1 = new Chart();
+
+                    switch (numOfMethod) {
+                        case (1) -> {
+                            Method1 method1 = new Method1();
+                            method1.method1(a, b, eps, numOfFunction, save);
+                            chart1.drawFunction(a, b, numOfFunction, numOfMethod);
+                        }
+                        case (3) -> {
+                            Method3 method3 = new Method3();
+                            method3.method3(a, b, eps, numOfFunction, save);
+                            chart1.drawFunction(a, b, numOfFunction, numOfMethod);
+                        }
+                        case (5) -> {
+                            Method5 method5 = new Method5();
+                            method5.method5(a, b, eps, numOfFunction, save);
+                            chart1.drawFunction(a, b, numOfFunction, 5);
+                        }
+                        case (6) -> {
+                            Method6 method6 = new Method6();
+                            method6.method6(a, b, eps, numOfFunction, save);
+                            chart1.drawTwoFunction(numOfFunction);
+                        }
+                    }
+
                     break;
                 case (0):
                     System.out.println("Конец работы");
