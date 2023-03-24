@@ -2,6 +2,7 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Main {
@@ -78,9 +79,13 @@ public class Main {
                             continue;
                         }
 
-                        int tmp = Function.checkRoots(a, b, numOfFunction);
-                        if (tmp != 1) {
-                            System.out.println("На данном интервале не один корень(" + tmp + ")");
+                        ArrayList<Double> tmp = Function.checkRoots(a, b, numOfFunction);
+                        if (tmp.size() != 3) {
+                            System.out.println("На данном интервале не один корень(" + (tmp.size() - 2) + ")");
+                            for (int i = 0; i < tmp.size() - 2; i++) {
+                                System.out.println("(" + Math.ceil(tmp.get(i)) + " ; " + Math.floor(tmp.get(i + 2)) + ")");
+
+                            }
                             continue;
                         }
 
@@ -226,9 +231,13 @@ public class Main {
                             continue;
                         }
 
-                        int tmp = Function.checkRoots(a, b, numOfFunction);
-                        if (tmp != 1) {
-                            System.out.println("На данном интервале не один корень(" + tmp + ")");
+                        ArrayList<Double> tmp = Function.checkRoots(a, b, numOfFunction);
+                        if (tmp.size() != 3) {
+                            System.out.println("На данном интервале не один корень(" + (tmp.size() - 2) + ")");
+                            for (int i = 0; i < tmp.size() - 2; i++) {
+                                System.out.println("(" + tmp.get(i) + " ; " + tmp.get(i + 2) + ")");
+
+                            }
                             continue;
                         }
 

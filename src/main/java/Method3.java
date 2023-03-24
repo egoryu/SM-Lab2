@@ -10,11 +10,19 @@ public class Method3 {
     ArrayList<Double> ab = new ArrayList<Double>();
 
     public void method3(double sa, double sb, double eps, int n, int save) {
+        System.out.println("f(a) = "+ Function.getFunction(sa, n));
+        System.out.println("f``(a) = "+ Function.getDerivativeFunction2(sa, n));
+        System.out.println("f(b) = "+ Function.getFunction(sb, n));
+        System.out.println("f``(b) = "+ Function.getDerivativeFunction2(sb, n));
         if (Function.getFunction(sa, n) * Function.getDerivativeFunction2(sa, n) > 0) {
+            System.out.println("x0 = "+ sa);
             a.add(sa);
         } else  {
+            System.out.println("x0 = "+ sb);
             a.add(sb);
         }
+
+        int check = 200;
 
         do {
             fa.add(Function.getFunction(a.get(a.size() - 1), n));
@@ -22,21 +30,25 @@ public class Method3 {
             b.add(a.get(a.size() - 1) - fa.get(fa.size() - 1) / fa1.get(fa1.size() - 1));
             ab.add(Math.abs(a.get(a.size() - 1) - b.get(b.size() - 1)));
             a.add(b.get(b.size() - 1));
-        } while (ab.get(ab.size() - 1) > eps);
+        } while (ab.get(ab.size() - 1) > eps && check-- > 0);
 
         fa.add(Function.getFunction(a.get(a.size() - 1), n));
         fa1.add(Function.getDerivativeFunction1(a.get(a.size() - 1), n));
         b.add(a.get(a.size() - 1) - fa.get(fa.size() - 1) / fa1.get(fa1.size() - 1));
         ab.add(Math.abs(a.get(a.size() - 1) - b.get(b.size() - 1)));
 
+        if (check <= 0) {
+            System.out.println("Метод не сходится");
+            return;
+        }
         if (save == 1) {
-            outputConsole();
+            outputConsole(n);
         } else {
             outputFile(n);
         }
     }
 
-    public void outputConsole() {
+    public void outputConsole(int n) {
         System.out.println("+------------------------------------------------" +
                 "-----------------------------------------------+\n");
         System.out.printf("|%-15s|%-15s|%-15s|%-15s|%-15s|%-15s|\n",
@@ -45,11 +57,12 @@ public class Method3 {
                 "---------------+---------------+---------------+\n");
 
         for (int i = 0; i < a.size(); i++) {
-            System.out.printf("|%-15d|%-15.4f|%-15.4f|%-15.4f|%-15.4f|%-15.4f|\n",
+            System.out.printf("|%-15d|%-15.5f|%-15.5f|%-15.5f|%-15.5f|%-15.5f|\n",
                     i, a.get(i), fa.get(i), fa1.get(i), b.get(i), ab.get(i));
             System.out.println("+---------------+---------------+---------------+" +
                     "---------------+---------------+---------------+\n");
         }
+        System.out.println("x = " + b.get(b.size() - 1) + " f(x) = " + Function.getFunction(b.get(b.size() - 1), n) + " n = " + a.size());
     }
 
     public void outputFile(int n) {
@@ -62,11 +75,12 @@ public class Method3 {
             fileWriter.write("+---------------+---------------+---------------+" +
                     "---------------+---------------+---------------+");
             for (int i = 0; i < fa.size(); i++) {
-                fileWriter.write(String.format("|%-15d|%-15.4f|%-15.4f|%-15.4f|%-15.4f|%-15.4f|\n",
+                fileWriter.write(String.format("|%-15d|%-15.5f|%-15.5f|%-15.5f|%-15.5f|%-15.5f|\n",
                         i, a.get(i), fa.get(i), fa1.get(i), b.get(i), ab.get(i)));
                 fileWriter.write("+---------------+---------------+---------------+" +
                         "---------------+---------------+---------------+");
             }
+            System.out.println("x = " + b.get(b.size() - 1) + " f(x) = " + Function.getFunction(b.get(b.size() - 1), n) + " n = " + a.size());
         } catch (IOException e) {
             System.out.println("Не удалось сохранить");
         }

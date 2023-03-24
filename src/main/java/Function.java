@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 public class Function {
     public static double getFunction(double x, int n) {
         if (n == 1) {
@@ -14,6 +16,9 @@ public class Function {
     public static double getFiFunction(double x, double a, double b, int n) {
         double lambda = -1.0 / getMaxValue(a, b, n);
 
+        if (getDerivativeFunction1(x, n) * getMaxValue(a, b, n) < 0) {
+            lambda = -lambda;
+        }
         return x + lambda * getFunction(x, n);
     }
 
@@ -32,6 +37,10 @@ public class Function {
     public static double getFiDerivativeFunction1(double x, double a, double b, int n) {
         double lambda = -1.0 / getMaxValue(a, b, n);
 
+        if (getDerivativeFunction1(x, n) * getMaxValue(a, b, n) < 0) {
+            lambda = -lambda;
+        }
+
         return 1 + lambda * getDerivativeFunction1(x, n);
     }
     public static double getDerivativeFunction2(double x, int n) {
@@ -46,36 +55,32 @@ public class Function {
         }
     }
 
-    public static int checkRoots(double a, double b, int n) {
-        int ans = 0;
+    public static ArrayList<Double> checkRoots(double a, double b, int n) {
+        ArrayList<Double> ans = new ArrayList<Double>();
+        ans.add(a);
 
-        for (double i = a; i <= b - 0.1; i += 0.1) {
-            double tmp = getFunction(i, n) * getFunction(i + 0.09, n);
-            if (tmp < 0.0) {
-                ans++;
+        double min = Math.min(Math.abs((a - b) / 10000), 0.5);
+        for (double i = a; i <= b - min; i += min) {
+            double tmp = getFunction(i, n) * getFunction(i + Math.min(Math.abs((a - b) / 10002), 0.5), n);
+            if (tmp <= 0.0) {
+                ans.add(i);
             }
         }
 
+        ans.add(b);
         return ans;
     }
 
     private static double getMaxValue(double a, double b, int n) {
-        double ans = 0;
-
-        for (double i = a; i <= b; i += 0.1) {
-            ans = Math.max(Math.abs(ans), Math.abs(getDerivativeFunction1(i, n)));
+        if (Math.abs(getDerivativeFunction1(a, n)) > Math.abs(getDerivativeFunction1(b, n))) {
+            return getDerivativeFunction1(a, n);
+        } else {
+            return getDerivativeFunction1(b, n);
         }
-
-        return ans;
+       // return Math.max(Math.abs(getDerivativeFunction1(a, n)), Math.abs(getDerivativeFunction1(b, n)));
     }
 
     public static double getDerivativeMaxValue(double a, double b, int n) {
-        double ans = 0;
-
-        for (double i = a; i <= b; i += 0.1) {
-            ans = Math.max(Math.abs(ans), Math.abs(getFiDerivativeFunction1(i, a, b, n)));
-        }
-
-        return ans;
+        return Math.max(Math.abs(getFiDerivativeFunction1(a, a, b, n)), Math.abs(getFiDerivativeFunction1(b, a, b, n)));
     }
 }

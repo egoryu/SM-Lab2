@@ -1,3 +1,4 @@
+import javafx.util.Pair;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -12,31 +13,44 @@ public class Method6 {
     ArrayList<Double> fb = new ArrayList<Double>();
 
     public void method6(double sa, double sb, double eps, int n, int save) {
+        int check = 200;
+        Pair<Double, Double> x;
+
         a.add(sa);
         b.add(sb);
 
         if (n == 1) {
             do {
-                db.add((12.0 - 3 * Math.pow(b.get(b.size() - 1), 2) - b.get(b.size() - 1)) / (6 * b.get(b.size() - 1) + 1));
-                da.add((db.get(db.size() - 1) + b.get(b.size() - 1) - 3 * Math.pow(a.get(a.size() - 1), 2)) /
-                        (6 * a.get(a.size() - 1)));
+                x = solve(2 * a.get(a.size() - 1), 2 * b.get(b.size() - 1),
+                        4 - Math.pow(a.get(a.size() - 1), 2) - Math.pow(b.get(b.size() - 1), 2),
+                        -6 * a.get(a.size() - 1), 1,
+                        3 * Math.pow(a.get(a.size() - 1), 2) - b.get(b.size() - 1));
+                db.add(x.getValue());
+                da.add(x.getKey());
                 a.add(a.get(a.size() - 1) + da.get(da.size() - 1));
                 b.add(b.get(b.size() - 1) + db.get(db.size() - 1));
                 fa.add(Math.pow(a.get(a.size() - 1), 2) + Math.pow(b.get(b.size() - 1), 2) - 4);
                 fb.add(3 * Math.pow(a.get(a.size() - 1), 2) - b.get(b.size() - 1));
-            } while (Math.max(Math.abs(da.get(da.size() - 1)), Math.abs(db.get(db.size() - 1))) > eps);
+            } while (Math.max(Math.abs(da.get(da.size() - 1)), Math.abs(db.get(db.size() - 1))) > eps && check-- > 0);
         } else {
             do {
-                db.add((1 - a.get(a.size() - 1) * b.get(b.size() - 1) - Math.pow(b.get(b.size() - 1), 2)) /
-                        (2 * b.get(b.size() - 1) + 2 * a.get(a.size() - 1)));
-                da.add(b.get(b.size() - 1) + db.get(db.size() - 1) - a.get(a.size() - 1));
+                x = solve(2 * a.get(a.size() - 1), 2 * b.get(b.size() - 1),
+                        1 - Math.pow(a.get(a.size() - 1), 2) - Math.pow(b.get(b.size() - 1), 2),
+                        -1, 1,
+                        a.get(a.size() - 1) - b.get(b.size() - 1));
+                da.add(x.getKey());
+                db.add(x.getValue());
                 a.add(a.get(a.size() - 1) + da.get(da.size() - 1));
                 b.add(b.get(b.size() - 1) + db.get(db.size() - 1));
                 fa.add(Math.pow(a.get(a.size() - 1), 2) + Math.pow(b.get(b.size() - 1), 2) - 1);
                 fb.add(a.get(a.size() - 1) - b.get(b.size() - 1));
-            } while (Math.max(Math.abs(da.get(da.size() - 1)), Math.abs(db.get(db.size() - 1))) > eps);
+            } while (Math.max(Math.abs(da.get(da.size() - 1)), Math.abs(db.get(db.size() - 1))) > eps && check-- > 0);
         }
 
+        if (check <= 0) {
+            System.out.println("Алгоритм не сходиться");
+            return;
+        }
         if (save == 1) {
             outputConsole();
         } else {
@@ -53,11 +67,13 @@ public class Method6 {
                 "---------------+---------------+---------------+---------------+");
 
         for (int i = 0; i < fa.size(); i++) {
-            System.out.printf("|%-15d|%-15.4f|%-15.4f|%-15.4f|%-15.4f|%-15.4f|%-15.4f|\n",
+            System.out.printf("|%-15d|%-15.5f|%-15.5f|%-15.5f|%-15.5f|%-15.5f|%-15.5f|\n",
                     i, a.get(i), b.get(i), da.get(i), db.get(i), fa.get(i), fb.get(i));
             System.out.println("|---------------+---------------+---------------+" +
                     "---------------+---------------+---------------+---------------|");
         }
+        System.out.println("x = " + a.get(a.size() - 1) + " y = " + b.get(b.size() - 1) +
+                "\nf(x) = " + fa.get(fa.size() - 1) + " g(x) = " + fb.get(fa.size() - 1) + "\nn = " + a.size());
     }
 
     public void outputFile(int n) {
@@ -70,7 +86,7 @@ public class Method6 {
             fileWriter.write("+---------------+---------------+---------------+" +
                     "---------------+---------------+---------------+---------------+\n");
             for (int i = 0; i < fa.size(); i++) {
-                fileWriter.write(String.format("|%-15d|%-15.4f|%-15.4f|%-15.4f|%-15.4f|%-15.4f|%-15.4f|\n",
+                fileWriter.write(String.format("|%-15d|%-15.5f|%-15.5f|%-15.5f|%-15.5f|%-15.5f|%-15.5f|\n",
                         i, a.get(i), b.get(i), da.get(i), db.get(i), fa.get(i), fb.get(i)));
                 fileWriter.write("|---------------+---------------+---------------+" +
                         "---------------+---------------+---------------+---------------|\n");
@@ -78,5 +94,11 @@ public class Method6 {
         } catch (IOException e) {
             System.out.println("Не удалось сохранить");
         }
+    }
+
+    public Pair<Double, Double> solve(double x1, double y1, double a1, double x2, double y2, double a2) {
+        double d = x1 * y2 - x2 * y1;
+
+        return new Pair<>((a1 * y2 - a2 * y1) / d, (x1 * a2 - x2 * a1) / d);
     }
 }
