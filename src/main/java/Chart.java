@@ -30,6 +30,11 @@ public class Chart {
                 line.add(i, Function.getFiFunction(i, a, b, n));
             }
             lineDataset.addSeries(line);
+            XYSeries line1 = new XYSeries("X=Y");
+            for (double i = a; i <= b; i += (b - a) / 50) {
+                line1.add(i, i);
+            }
+            lineDataset.addSeries(line1);
         }
 
         lineDataset.addSeries(series);
